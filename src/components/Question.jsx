@@ -11,7 +11,7 @@ export default function Question({ question }) {
         <h3>{title}</h3>
         <div className="flex flex-row justify-evenly">
           <div>
-            <div class="text-red-800">Score</div>
+            <div className="text-red-800">Score</div>
             <div
               className={`${
                 score < 0 ? 'text-red-600' : 'text-black'
@@ -21,7 +21,7 @@ export default function Question({ question }) {
             </div>
           </div>
           <div>
-            <div class="text-red-800">Answers</div>
+            <div className="text-red-800">Answers</div>
             <div
               className={`${
                 is_answered

@@ -12,7 +12,7 @@ export default function Tag({ name, currentTag, setCurrentTag }) {
         checked={name === currentTag}
         onChange={() => setCurrentTag(name)}
       />
-      <span className="inline-block border-2 border-blue-400 px-1 py-1 peer-checked:bg-blue-400 text-center rounded-md">
+      <span className="inline-block border-2 border-blue-300 px-1 py-1 peer-checked:bg-blue-300 text-center rounded-md">
         {name}
       </span>
     </label>
