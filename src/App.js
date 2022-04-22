@@ -7,47 +7,59 @@ import SearchBar from './components/SearchBar';
 import Spinner from './components/Spinner';
 import { fetchTags, fetchQuestions } from './api';
 
+import { useSelector, useDispatch } from 'react-redux';
+import { setTags } from './store/tag';
+import { setQuestions, addQuestions } from './store/question';
+
 import mockQuestions from './mock/questions';
 import mockTags from './mock/tags';
 
 function App() {
-  const [tags, setTags] = useState([]);
+  // const [tags, setTags] = useState([]);
   const [currentTag, setCurrentTag] = useState('');
-  const [questions, setQuestions] = useState([]);
+  // const [questions, setQuestions] = useState([]);
   const [search, setSearch] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(0);
   const scrollPosition = useScrollPosition();
 
+  const tags = useSelector((state) => state.tag.value);
+  const questions = useSelector((state) => state.question.value);
+  const dispatch = useDispatch();
+
+  // fetching data initially
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       const tags = await fetchTags().then((apiTags) => {
-        setTags(apiTags.items);
+        dispatch(setTags(apiTags.items));
         return apiTags.items;
       });
 
       if (tags && tags.length > 0) {
-        setCurrentTag(tags[0].name);
-        await fetchQuestions(tags[0].name, 1).then((apiQuestions) => {
-          setQuestions(apiQuestions.items);
+        const firstTag = tags[0].name;
+        setCurrentTag(firstTag);
+
+        await fetchQuestions(firstTag, 1).then((apiQuestions) => {
+          dispatch(setQuestions(apiQuestions.items));
         });
       }
       setIsLoading(false);
       setPage(1);
     };
 
-    fetchData();
+    // fetchData();
   }, []);
 
   // use mock data
-  // useEffect(() => {
-  //   setTags(mockTags.items);
-  //   setCurrentTag(mockTags.items[0].name);
-  //   setQuestions(mockQuestions.items);
-  //   setPage(1);
-  // }, []);
+  useEffect(() => {
+    dispatch(setTags(mockTags.items));
+    setCurrentTag(mockTags.items[0].name);
+    dispatch(setQuestions(mockQuestions.items));
+    setPage(1);
+  }, []);
 
+  // fetching data of next page
   useEffect(() => {
     const fetchNextPage = async () => {
       if (
@@ -58,7 +70,7 @@ function App() {
         setIsLoading(true);
         setPage(page + 1);
         await fetchQuestions(currentTag, page + 1).then((apiQuestions) => {
-          setQuestions(questions.concat(apiQuestions.items));
+          dispatch(addQuestions(apiQuestions.items));
         });
         setIsLoading(false);
       }
@@ -71,20 +83,21 @@ function App() {
     _.debounce(async (search) => {
       setIsLoading(true);
       const tags = await fetchTags(search).then((apiTags) => {
-        setTags(apiTags.items);
+        dispatch(setTags(apiTags.items));
         return apiTags.items;
       });
 
-      setQuestions([]);
+      dispatch(setQuestions([]));
       if (tags && tags.length > 0) {
-        setCurrentTag(tags[0].name);
+        const firstTag = tags[0].name;
+        setCurrentTag(firstTag);
 
-        await fetchQuestions(tags[0].name, 1).then((apiQuestions) => {
-          setQuestions(apiQuestions.items);
+        await fetchQuestions(firstTag, 1).then((apiQuestions) => {
+          dispatch(setQuestions(apiQuestions.items));
         });
       }
 
-      setIsLoading(true);
+      setIsLoading(false);
       setPage(1);
     }, 500),
     []
@@ -98,10 +111,10 @@ function App() {
   const clickTag = async (tag) => {
     setIsLoading(true);
     setCurrentTag(tag);
-    setQuestions([]);
+    dispatch(setQuestions([]));
     setPage(1);
     await fetchQuestions(tag, 1).then((apiQuestions) => {
-      setQuestions(apiQuestions.items);
+      dispatch(setQuestions(apiQuestions.items));
     });
     setIsLoading(false);
   };
