@@ -10,6 +10,8 @@ export default function Question({ question }) {
       className="w-full flex flex-row border-b-2 border-gray-300 p-1"
       href={link}
       alt={title}
+      target="_blank"
+      rel="noopener noreferrer"
     >
       <div className="w-full">
         <h3>{title}</h3>
