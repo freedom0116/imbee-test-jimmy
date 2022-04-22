@@ -19,31 +19,34 @@ function App() {
   const [page, setPage] = useState(0);
   const scrollPosition = useScrollPosition();
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     setIsLoading(true);
-  //     await fetchTags().then((apiTags) => {
-  //       setTags(apiTags.items);
-  //       if (apiTags.items && apiTags.items.length > 0)
-  //         setCurrentTag(apiTags.items[0].name);
-  //     });
-  //     await fetchQuestions(currentTag, 1).then((apiQuestions) => {
-  //       setQuestions(apiQuestions.items);
-  //     });
-  //     setIsLoading(false);
-  //     setPage(1);
-  //   };
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      const tags = await fetchTags().then((apiTags) => {
+        setTags(apiTags.items);
+        return apiTags.items;
+      });
 
-  //   fetchData();
-  // }, []);
+      if (tags && tags.length > 0) {
+        setCurrentTag(tags[0].name);
+        await fetchQuestions(tags[0].name, 1).then((apiQuestions) => {
+          setQuestions(apiQuestions.items);
+        });
+      }
+      setIsLoading(false);
+      setPage(1);
+    };
+
+    fetchData();
+  }, []);
 
   // use mock data
-  useEffect(() => {
-    setTags(mockTags.items);
-    setCurrentTag(mockTags.items[0].name);
-    setQuestions(mockQuestions.items);
-    setPage(1);
-  }, []);
+  // useEffect(() => {
+  //   setTags(mockTags.items);
+  //   setCurrentTag(mockTags.items[0].name);
+  //   setQuestions(mockQuestions.items);
+  //   setPage(1);
+  // }, []);
 
   useEffect(() => {
     const fetchNextPage = async () => {
@@ -66,15 +69,23 @@ function App() {
 
   const debounceSearch = useCallback(
     _.debounce(async (search) => {
-      await fetchTags(search).then((apiTags) => {
+      setIsLoading(true);
+      const tags = await fetchTags(search).then((apiTags) => {
         setTags(apiTags.items);
-        if (apiTags.items && apiTags.items.length > 0)
-          setCurrentTag(apiTags.items[0].name);
+        return apiTags.items;
       });
+
+      setQuestions([]);
+      if (tags && tags.length > 0) {
+        setCurrentTag(tags[0].name);
+
+        await fetchQuestions(tags[0].name, 1).then((apiQuestions) => {
+          setQuestions(apiQuestions.items);
+        });
+      }
+
+      setIsLoading(true);
       setPage(1);
-      await fetchQuestions(currentTag, 1).then((apiQuestions) => {
-        setQuestions(apiQuestions.items);
-      });
     }, 500),
     []
   );
