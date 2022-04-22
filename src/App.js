@@ -97,14 +97,14 @@ function App() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <div className={`${scrollPosition > 36 ? 'fixed w-full' : 'relative'}`}>
-        <SearchBar value={search} onChange={searchTag}></SearchBar>
-      </div>
+      <SearchBar value={search} onChange={searchTag}></SearchBar>
 
       <div className="text-left">
         <h3 className="text-2xl">Trending</h3>
       </div>
-      <div>
+      <div
+        className={`${scrollPosition > 80 ? 'fixed w-full top-2' : 'relative'}`}
+      >
         {tags.map(({ name }) => (
           <Tag
             key={name}
