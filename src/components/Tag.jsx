@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function Tag({ name, currentTag, setCurrentTag }) {
+export default function Tag({ name, currentTag, onChange }) {
   return (
     <label className="p-1">
       <input
@@ -10,9 +10,9 @@ export default function Tag({ name, currentTag, setCurrentTag }) {
         value="none"
         className="peer hidden"
         checked={name === currentTag}
-        onChange={() => setCurrentTag(name)}
+        onChange={() => onChange(name)}
       />
-      <span className="inline-block border-2 border-blue-300 px-1 py-1 peer-checked:bg-blue-300 text-center rounded-md">
+      <span className="inline-block border-2 border-blue-300 px-1 py-1 peer-checked:bg-blue-300 text-center rounded-md cursor-pointer">
         {name}
       </span>
     </label>

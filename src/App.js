@@ -7,6 +7,7 @@ import mockQuestions from './mock/questions';
 import mockTags from './mock/tags';
 import useScrollPosition from './hooks/useScrollPosition';
 import SearchBar from './components/SearchBar';
+import Spinner from './components/Spinner';
 
 const fetchTags = async (tag = '') => {
   const url =
@@ -39,32 +40,31 @@ function App() {
   const [currentTag, setCurrentTag] = useState('');
   const [questions, setQuestions] = useState([]);
   const [search, setSearch] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const scrollPosition = useScrollPosition();
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     await fetchTags().then((apiTags) => {
-  //       setTags(apiTags.items);
-  //       setCurrentTag(apiTags.items[0].name);
-  //     });
-  //     await fetchQuestions(currentTag).then((apiQuestions) => {
-  //       setQuestions(apiQuestions.items);
-  //     });
-  //   };
-
-  //   fetchData();
-  // }, []);
-
   useEffect(() => {
-    console.log(scrollPosition);
-  }, [scrollPosition]);
+    const fetchData = async () => {
+      setIsLoading(true);
+      await fetchTags().then((apiTags) => {
+        setTags(apiTags.items);
+        setCurrentTag(apiTags.items[0].name);
+      });
+      await fetchQuestions(currentTag).then((apiQuestions) => {
+        setQuestions(apiQuestions.items);
+      });
+      setIsLoading(false);
+    };
+
+    fetchData();
+  }, []);
 
   // use mock data
-  useEffect(() => {
-    setTags(mockTags.items);
-    setCurrentTag(mockTags.items[0].name);
-    setQuestions(mockQuestions.items);
-  }, []);
+  // useEffect(() => {
+  //   setTags(mockTags.items);
+  //   setCurrentTag(mockTags.items[0].name);
+  //   setQuestions(mockQuestions.items);
+  // }, []);
 
   const debounceSearch = useCallback(
     _.debounce(async (search) => {
@@ -84,6 +84,16 @@ function App() {
     await debounceSearch(e);
   };
 
+  const clickTag = async (tag) => {
+    setIsLoading(true);
+    setCurrentTag(tag);
+    setQuestions([]);
+    await fetchQuestions(tag).then((apiQuestions) => {
+      setQuestions(apiQuestions.items);
+    });
+    setIsLoading(false);
+  };
+
   return (
     <div className="max-w-2xl mx-auto">
       <div className={`${scrollPosition > 36 ? 'fixed w-full' : 'relative'}`}>
@@ -98,8 +108,8 @@ function App() {
           <Tag
             key={name}
             name={name}
+            onChange={clickTag}
             currentTag={currentTag}
-            setCurrentTag={setCurrentTag}
           ></Tag>
         ))}
       </div>
@@ -108,6 +118,11 @@ function App() {
           <Question key={question.question_id} question={question} />
         ))}
       </div>
+      {isLoading && (
+        <div class="flex justify-center">
+          <Spinner />
+        </div>
+      )}
     </div>
   );
 }
