@@ -3,6 +3,10 @@ import Question from './components/Question';
 import Tag from './components/Tag';
 import APIs from './config';
 import _ from 'lodash';
+import mockQuestions from './mock/questions';
+import mockTags from './mock/tags';
+import useScrollPosition from './hooks/useScrollPosition';
+import SearchBar from './components/SearchBar';
 
 const fetchTags = async (tag = '') => {
   const url =
@@ -35,19 +39,31 @@ function App() {
   const [currentTag, setCurrentTag] = useState('');
   const [questions, setQuestions] = useState([]);
   const [search, setSearch] = useState('');
+  const scrollPosition = useScrollPosition();
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     await fetchTags().then((apiTags) => {
+  //       setTags(apiTags.items);
+  //       setCurrentTag(apiTags.items[0].name);
+  //     });
+  //     await fetchQuestions(currentTag).then((apiQuestions) => {
+  //       setQuestions(apiQuestions.items);
+  //     });
+  //   };
+
+  //   fetchData();
+  // }, []);
 
   useEffect(() => {
-    const fetchData = async () => {
-      await fetchTags().then((apiTags) => {
-        setTags(apiTags.items);
-        setCurrentTag(apiTags.items[0].name);
-      });
-      await fetchQuestions(currentTag).then((apiQuestions) => {
-        setQuestions(apiQuestions.items);
-      });
-    };
+    console.log(scrollPosition);
+  }, [scrollPosition]);
 
-    fetchData();
+  // use mock data
+  useEffect(() => {
+    setTags(mockTags.items);
+    setCurrentTag(mockTags.items[0].name);
+    setQuestions(mockQuestions.items);
   }, []);
 
   const debounceSearch = useCallback(
@@ -70,17 +86,8 @@ function App() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <div className="flex flex-row mt-2 h-8">
-        <input
-          type="text"
-          placeholder="tag"
-          value={search}
-          onChange={(e) => searchTag(e.target.value)}
-          className="w-full border border-blue-300 rounded-l-lg"
-        />
-        <div className="relative bg-blue-300 px-4 py-1 rounded-r-lg">
-          Search
-        </div>
+      <div className={`${scrollPosition > 36 ? 'fixed w-full' : 'relative'}`}>
+        <SearchBar value={search} onChange={searchTag}></SearchBar>
       </div>
 
       <div className="text-left">
