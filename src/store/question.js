@@ -7,7 +7,6 @@ export const questionSlice = createSlice({
   },
   reducers: {
     setQuestions: (state, action) => {
-      console.log(action.payload);
       state.value = action.payload;
     },
     addQuestions: (state, action) => {

@@ -11,13 +11,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setTags } from './store/tag';
 import { setQuestions, addQuestions } from './store/question';
 
-import mockQuestions from './mock/questions';
-import mockTags from './mock/tags';
-
 function App() {
-  // const [tags, setTags] = useState([]);
   const [currentTag, setCurrentTag] = useState('');
-  // const [questions, setQuestions] = useState([]);
   const [search, setSearch] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(0);
@@ -48,15 +43,7 @@ function App() {
       setPage(1);
     };
 
-    // fetchData();
-  }, []);
-
-  // use mock data
-  useEffect(() => {
-    dispatch(setTags(mockTags.items));
-    setCurrentTag(mockTags.items[0].name);
-    dispatch(setQuestions(mockQuestions.items));
-    setPage(1);
+    fetchData();
   }, []);
 
   // fetching data of next page
