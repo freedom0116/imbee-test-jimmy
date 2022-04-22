@@ -6,7 +6,7 @@ export default function Tag({ name, currentTag, onChange }) {
       <input
         type="radio"
         id={`tag-${name}`}
-        name="contact"
+        name={name}
         value="none"
         className="peer hidden"
         checked={name === currentTag}
