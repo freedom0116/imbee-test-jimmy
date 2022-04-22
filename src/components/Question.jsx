@@ -1,12 +1,16 @@
 import React from 'react';
 
 export default function Question({ question }) {
-  const { title, score, answer_count, view_count, is_answered, owner } =
+  const { title, score, answer_count, view_count, is_answered, owner, link } =
     question;
   const { profile_image, display_name } = owner;
 
   return (
-    <div className="w-full flex flex-row border-b-2 border-gray-300 p-1">
+    <a
+      className="w-full flex flex-row border-b-2 border-gray-300 p-1"
+      href={link}
+      alt={title}
+    >
       <div className="w-full">
         <h3>{title}</h3>
         <div className="flex flex-row justify-evenly">
@@ -48,6 +52,6 @@ export default function Question({ question }) {
         ></img>
         <div className="text-center">{display_name}</div>
       </div>
-    </div>
+    </a>
   );
 }
